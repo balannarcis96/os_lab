@@ -1,0 +1,2 @@
+/usr/bin/ar qc libos_lab_shared.a  CMakeFiles/os_lab_shared.dir/command.cpp.o CMakeFiles/os_lab_shared.dir/shared.cpp.o CMakeFiles/os_lab_shared.dir/utils.cpp.o
+/usr/bin/ranlib libos_lab_shared.a

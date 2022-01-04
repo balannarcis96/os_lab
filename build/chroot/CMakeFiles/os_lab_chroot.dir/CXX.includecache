@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/narcis/dev/os_lab/source/chroot/chroot.cpp
+chroot.h
+/home/narcis/dev/os_lab/source/chroot/chroot.h
+
+/home/narcis/dev/os_lab/source/chroot/chroot.h
+shared.h
+-
+
+/home/narcis/dev/os_lab/source/shared/command.h
+
+/home/narcis/dev/os_lab/source/shared/shared.h
+iostream
+-
+string
+-
+vector
+-
+algorithm
+-
+fstream
+-
+unistd.h
+-
+stdio.h
+-
+dirent.h
+-
+utils.h
+/home/narcis/dev/os_lab/source/shared/utils.h
+command.h
+/home/narcis/dev/os_lab/source/shared/command.h
+
+/home/narcis/dev/os_lab/source/shared/utils.h
+

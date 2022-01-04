@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/os_lab_mush.dir/main.cpp.o  -o os_lab_mush  ../shared/libos_lab_shared.a ../nl/libos_lab_nl.a ../head/libos_lab_head.a ../chroot/libos_lab_chroot.a ../shared/libos_lab_shared.a 

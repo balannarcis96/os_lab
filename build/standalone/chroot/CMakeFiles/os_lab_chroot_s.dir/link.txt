@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/os_lab_chroot_s.dir/main.cpp.o  -o os_lab_chroot_s  ../../chroot/libos_lab_chroot.a ../../shared/libos_lab_shared.a 

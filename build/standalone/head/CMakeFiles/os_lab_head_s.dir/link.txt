@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/os_lab_head_s.dir/main.cpp.o  -o os_lab_head_s  ../../head/libos_lab_head.a ../../shared/libos_lab_shared.a 

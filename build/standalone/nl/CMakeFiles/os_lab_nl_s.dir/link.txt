@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/os_lab_nl_s.dir/main.cpp.o  -o os_lab_nl_s  ../../nl/libos_lab_nl.a ../../shared/libos_lab_shared.a 
