@@ -33,11 +33,6 @@ bool ProcessArguments(int argc, char **argv) noexcept
     }
 
     GTargetFileName = Parser.GetFileName();
-    // if (GTargetFileName.empty())
-    // {
-    //     puts("Error: No file name supplied!\n");
-    //     return 3;
-    // }
 
     return true;
 }
