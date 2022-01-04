@@ -14,13 +14,13 @@ bool ProcessArguments(int argc, char **argv) noexcept
     {
         if (Option.second.empty())
         {
-            puts("Error: Invalid -c usage, see usage string (-h)!\n");
+            puts("head: Invalid -c usage, see usage string (-h)!\n");
             return false;
         }
 
         if (!IsIntegerString(Option.second.c_str()))
         {
-            printf("Error: Invalid -c usage! Invalid number of bytes [%s]! See usage string (-h)!\n", Option.second.c_str());
+            printf("head: Invalid -c usage! Invalid number of bytes [%s]! See usage string (-h)!\n", Option.second.c_str());
             return false;
         }
 
@@ -32,13 +32,13 @@ bool ProcessArguments(int argc, char **argv) noexcept
     {
         if (Option.second.empty())
         {
-            puts("Error: Invalid -n usage, see usage string (-h)!\n");
+            puts("head: Invalid -n usage, see usage string (-h)!\n");
             return false;
         }
 
         if (!IsIntegerString(Option.second.c_str()))
         {
-            printf("Error: Invalid -n usage! Invalid number of lines [%s]! See usage string (-h)!\n", Option.second.c_str());
+            printf("head: Invalid -n usage! Invalid number of lines [%s]! See usage string (-h)!\n", Option.second.c_str());
             return false;
         }
 

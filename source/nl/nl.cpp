@@ -13,7 +13,7 @@ bool ProcessArguments(int argc, char **argv) noexcept
     {
         if (Option.second.empty())
         {
-            puts("Error: Invalid -d usage, see usage string (-h)!\n");
+            puts("nl: Invalid -d usage, see usage string (-h)!\n");
             return false;
         }
 
@@ -25,7 +25,7 @@ bool ProcessArguments(int argc, char **argv) noexcept
     {
         if (Option.second.empty())
         {
-            puts("Error: Invalid -s usage, see usage string (-h)!\n");
+            puts("nl: Invalid -s usage, see usage string (-h)!\n");
             return false;
         }
 
