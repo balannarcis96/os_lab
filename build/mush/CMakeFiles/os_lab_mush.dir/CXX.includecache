@@ -14,6 +14,8 @@ shared.h
 shared.h
 -
 
+/home/narcis/dev/os_lab/source/mush/command.h
+
 /home/narcis/dev/os_lab/source/mush/main.cpp
 mush.h
 /home/narcis/dev/os_lab/source/mush/mush.h
@@ -25,12 +27,12 @@ head.h
 /home/narcis/dev/os_lab/source/mush/head.h
 chroot.h
 /home/narcis/dev/os_lab/source/mush/chroot.h
+command.h
+/home/narcis/dev/os_lab/source/mush/command.h
 
 /home/narcis/dev/os_lab/source/nl/nl.h
 shared.h
 -
-
-/home/narcis/dev/os_lab/source/shared/command.h
 
 /home/narcis/dev/os_lab/source/shared/shared.h
 iostream

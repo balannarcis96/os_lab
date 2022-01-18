@@ -100,3 +100,5 @@ private:
 };
 
 bool DirectoryExists(const char *pzPath) noexcept;
+
+std::vector<std::string> SplitAndTrim(std::string Source, char Delimtier) noexcept;
