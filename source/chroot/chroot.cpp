@@ -2,7 +2,7 @@
 
 std::string GTargetRoot = "";
 
-bool ProcessArguments( int argc, char **argv ) noexcept
+static bool ProcessArguments( int argc, char **argv ) noexcept
 {
 	ArgmutentsParser Parser( argc, argv );
 

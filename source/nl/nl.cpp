@@ -1,95 +1,104 @@
 #include "nl.h"
 
-std::string GSectionDelimiter = "";
-std::string GNumberSeparator = "  ";
-std::string GTargetFileName = "";
+static std::string GSectionDelimiter = "";
+static std::string GNumberSeparator	 = "  ";
+static std::string GTargetFileName	 = "";
 
-bool ProcessArguments(int argc, char **argv) noexcept
+static bool ProcessArguments( int argc, char **argv ) noexcept
 {
-    ArgmutentsParser Parser(argc, argv);
+	ArgmutentsParser Parser( argc, argv );
 
-    auto Option = Parser.FindWithValue("-d");
-    if (!Option.first.empty())
-    {
-        if (Option.second.empty())
-        {
-            puts("nl: Invalid -d usage, see usage string (-h)!\n");
-            return false;
-        }
+	auto Option = Parser.FindWithValue( "-d" );
+	if( !Option.first.empty( ) )
+	{
+		if( Option.second.empty( ) )
+		{
+			puts( "nl: Invalid -d usage, see usage string (-h)!\n" );
+			return false;
+		}
 
-        GSectionDelimiter = Option.second;
-    }
+		GSectionDelimiter = Option.second;
+	}
 
-    Option = Parser.FindWithValue("-s");
-    if (!Option.first.empty())
-    {
-        if (Option.second.empty())
-        {
-            puts("nl: Invalid -s usage, see usage string (-h)!\n");
-            return false;
-        }
+	Option = Parser.FindWithValue( "-s" );
+	if( !Option.first.empty( ) )
+	{
+		if( Option.second.empty( ) )
+		{
+			puts( "nl: Invalid -s usage, see usage string (-h)!\n" );
+			return false;
+		}
 
-        GNumberSeparator = Option.second;
-    }
+		GNumberSeparator = Option.second;
+	}
 
-    GTargetFileName = Parser.GetFileName();
+	GTargetFileName = Parser.GetFileName( );
 
-    return true;
+	return true;
 }
 
-std::pair<std::vector<std::string>, int> GetInput() noexcept
+static std::pair< std::vector< std::string >, int > GetInput( ) noexcept
 {
-    if (GTargetFileName.empty())
-    {
-        int LineNumber = 1;
-        for (std::string Line; std::getline(std::cin, Line);)
-        {
-            std::cout << '\t' << LineNumber++ << GNumberSeparator << Line << "\n";
-        }
+	if( GTargetFileName.empty( ) )
+	{
+		int LineNumber = 1;
+		for( std::string Line; std::getline( std::cin, Line ); )
+		{
+			std::cout << '\t' << LineNumber++ << GNumberSeparator << Line << "\n";
+		}
 
-        return {{}, SUCCESS};
-    }
+		return { { }, SUCCESS };
+	}
 
-    std::vector<std::string> Output;
+	std::vector< std::string > Output;
 
-    auto File = std::ifstream(GTargetFileName);
-    if (!File.is_open())
-    {
-        return {{}, ERROR_FILE_NOT_FOUND};
-    }
+	auto File = std::ifstream( GTargetFileName );
+	if( !File.is_open( ) )
+	{
+		return { { }, ERROR_FILE_NOT_FOUND };
+	}
 
-    for (std::string Line; std::getline(File, Line);)
-    {
-        Output.push_back(Line);
-    }
+	for( std::string Line; std::getline( File, Line ); )
+	{
+		Output.push_back( Line );
+	}
 
-    if (File.is_open())
-    {
-        File.close();
-    }
+	if( File.is_open( ) )
+	{
+		File.close( );
+	}
 
-    return {Output, SUCCESS};
+	return { Output, SUCCESS };
 }
 
-int main_nl(int argc, char **argv) noexcept
+int main_nl( int argc, char **argv ) noexcept
 {
-    const auto ProcessArgumentsResult = ProcessArguments(argc, argv);
-    if (!ProcessArgumentsResult)
-    {
-        return ERROR_FAILED_TO_PARSE_ARGUMENTS;
-    }
+	printf( "cuomst nl\n" );
 
-    const auto Lines = GetInput();
-    if (Lines.second != SUCCESS)
-    {
-        return Lines.second;
-    }
+	char **temp = argv;
+	while( *temp )
+	{
+		printf( "nl: %s\n", *temp );
+		temp++;
+	}
 
-    int LineNumber = 1;
-    for (const auto &Line : Lines.first)
-    {
-        std::cout << '\t' << LineNumber++ << GNumberSeparator << Line << "\n";
-    }
+	const auto ProcessArgumentsResult = ProcessArguments( argc, argv );
+	if( !ProcessArgumentsResult )
+	{
+		return ERROR_FAILED_TO_PARSE_ARGUMENTS;
+	}
 
-    return SUCCESS;
+	const auto Lines = GetInput( );
+	if( Lines.second != SUCCESS )
+	{
+		return Lines.second;
+	}
+
+	int LineNumber = 1;
+	for( const auto &Line : Lines.first )
+	{
+		std::cout << '\t' << LineNumber++ << GNumberSeparator << Line << "\n";
+	}
+
+	return SUCCESS;
 }

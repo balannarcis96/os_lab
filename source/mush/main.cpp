@@ -2,62 +2,59 @@
 
 std::string GCWD;
 
-bool UpdateCWD() noexcept
+bool UpdateCWD( ) noexcept
 {
-    char Buffer[PATH_MAX]{0};
+	char Buffer[ PATH_MAX ]{ 0 };
 
-    if (!getcwd(Buffer, PATH_MAX))
-    {
-        return false;
-    }
+	if( !getcwd( Buffer, PATH_MAX ) )
+	{
+		return false;
+	}
 
-    GCWD = Buffer;
+	GCWD = Buffer;
 
-    return true;
+	return true;
 }
 
-bool PrintLineStart() noexcept
+bool PrintLineStart( ) noexcept
 {
-    if (!UpdateCWD())
-    {
-        return false;
-    }
+	if( !UpdateCWD( ) )
+	{
+		return false;
+	}
 
-    std::cout << ">" << GCWD << "$ ";
+	std::cout << ">" << GCWD << "$ ";
 
-    return true;
+	return true;
 }
 
-int ProcessCommand(const std::string &Command) noexcept
+int main( int argc, char **argv )
 {
-    
+	system( "clear" );
 
+	printf( "############# MUSH-CLI ###############\n\n" );
 
+	while( true )
+	{
+		if( !PrintLineStart( ) )
+		{
+			return FAIL;
+		}
 
-    return SUCCESS;
-}
+		std::string Line;
+		if( !std::getline( std::cin, Line ) )
+		{
+			break;
+		}
 
-int main(int argc, char **argv)
-{
-    while (true)
-    {
-        if (!PrintLineStart())
-        {
-            return FAIL;
-        }
+		if( Line == "clear" || Line == "cls" )
+		{
+			system( "clear" );
+			continue;
+		}
 
-        std::string Line;
-        if (!std::getline(std::cin, Line))
-        {
-            break;
-        }
+		ProcessCommand( Line );
+	}
 
-        const int Result = ProcessCommand(Line);
-        if (Result)
-        {
-            return Result;
-        }
-    }
-
-    return SUCCESS;
+	return SUCCESS;
 }
