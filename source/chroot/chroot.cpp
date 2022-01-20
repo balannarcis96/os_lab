@@ -20,9 +20,7 @@ bool ProcessInput( ) noexcept
 {
 	if( !DirectoryExists( GTargetRoot.c_str( ) ) )
 	{
-		printf( "chroot: cannot change root directory to '%s': No such file or "
-				"directory\n",
-				GTargetRoot.c_str( ) );
+		printf( "chroot: cannot change root directory to '%s': No such directory\n", GTargetRoot.c_str( ) );
 		return false;
 	}
 

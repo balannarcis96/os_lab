@@ -13,8 +13,22 @@ void Command::FromStringList( const std::vector< std::string > &StringList ) noe
 	{
 		const auto &String = StringList[ i ];
 
-		Argv[ i ] = reinterpret_cast< char * >( malloc( sizeof( char ) * String.size( ) + 1 ) );
-		memcpy( Argv[ i ], String.data( ), String.size( ) + 1 );
+		if( i == 0 )
+		{
+			// char Buffer[ PATH_MAX ];
+			// getcwd( Buffer, PATH_MAX );
+
+			std::string Temp = "/bin/";
+			Temp += String;
+
+			Argv[ i ] = reinterpret_cast< char * >( malloc( sizeof( char ) * ( Temp.size( ) + 1 ) ) );
+			memcpy( Argv[ i ], Temp.data( ), Temp.size( ) + 1 );
+		}
+		else
+		{
+			Argv[ i ] = reinterpret_cast< char * >( malloc( sizeof( char ) * ( String.size( ) + 1 ) ) );
+			memcpy( Argv[ i ], String.data( ), String.size( ) + 1 );
+		}
 	}
 
 	Argc = static_cast< int >( StringList.size( ) );
@@ -80,6 +94,17 @@ int Command::Execvp( ) noexcept
 {
 	FromStringList( CommandParts );
 
+	printf( "####### Args ########\n" );
+
+	char **Temp = GetArgv( );
+	while( *Temp )
+	{
+		printf( "%s\n", *Temp );
+		Temp++;
+	}
+
+	printf( "####################\n\n" );
+
 	return execvp( Argv[ 0 ], Argv );
 }
 
@@ -131,6 +156,7 @@ bool CommandLineParser::ParseCommand( const std::string &Command ) noexcept
 
 	std::vector< std::string > Reconstructed;
 
+	int Index = 0;
 	for( const auto &Item : TempList )
 	{
 		if( Item == "|" || Item == ">" )
@@ -140,6 +166,7 @@ bool CommandLineParser::ParseCommand( const std::string &Command ) noexcept
 				CommandOrConnector NewCommand;
 				NewCommand.Value	  = Reconstructed[ 0 ];
 				NewCommand.bIsCommand = true;
+				NewCommand.bIsChroot  = Reconstructed[ 0 ] == "chroot";
 
 				NewCommand.ParsedCommand.SetCommandParts( Reconstructed );
 
@@ -156,8 +183,49 @@ bool CommandLineParser::ParseCommand( const std::string &Command ) noexcept
 		}
 		else
 		{
-			Reconstructed.push_back( Item );
+			if( Index > 0 && TempList[ Index - 1 ] == "chroot" )
+			{
+				if( !Reconstructed.empty( ) )
+				{
+					CommandOrConnector NewCommand;
+					NewCommand.Value	  = Reconstructed[ 0 ];
+					NewCommand.bIsCommand = true;
+					NewCommand.bIsChroot  = Reconstructed[ 0 ] == "chroot";
+
+					NewCommand.ParsedCommand.SetCommandParts( Reconstructed );
+
+					Result.push_back( NewCommand );
+
+					Reconstructed.clear( );
+				}
+
+				if( Result.back( ).IsChroot( ) == false )
+				{
+					puts( "part of chroot next argument is not chroo?!\n" );
+					return false;
+				}
+
+				if( Item == "--help" )
+				{
+					Result.back( ).ShowHelp = true;
+				}
+				else if( Item == "--version" )
+				{
+					Result.back( ).ShowVersion = true;
+				}
+				else
+				{
+					Result.back( ).ChrootTarget = Item;
+					//printf( "parseCmd: chroot target: %s\n", Item.c_str( ) );
+				}
+			}
+			else
+			{
+				Reconstructed.push_back( Item );
+			}
 		}
+
+		Index++;
 	}
 
 	if( !Reconstructed.empty( ) )
@@ -193,7 +261,9 @@ bool CommandLineParser::ParseCommand( const std::string &Command ) noexcept
 		{
 			const auto &Item = Result[ i ];
 
-			if( bIsCommand && Item.bIsCommand )
+			const auto &Prev = i > 0 ? Result[ i - 1 ] : CommandOrConnector::Empty;
+
+			if( bIsCommand && Item.bIsCommand && !Prev.IsChroot( ) )
 			{
 				printf( "mush: Cannot have consecutive commands without a connector (| , >)\n" );
 				return false;
@@ -214,4 +284,15 @@ bool CommandLineParser::ParseCommand( const std::string &Command ) noexcept
 void CommandOrConnector::PrepareCustomCommand( ) noexcept
 {
 	ParsedCommand.FromStringList( ParsedCommand.CommandParts );
+
+	// printf( "####### Args ########\n" );
+
+	// char **Temp = ParsedCommand.GetArgv( );
+	// while( *Temp )
+	// {
+	// 	printf( "%s\n", *Temp );
+	// 	Temp++;
+	// }
+
+	// printf( "####################\n\n" );
 }

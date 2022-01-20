@@ -1,6 +1,6 @@
 #include "head.h"
 
-static int		   GNumberOfBytes  = 23;
+static int		   GNumberOfBytes  = 9999;
 static int		   GNumberOfLines  = 10;
 static bool		   GQuite		   = true;
 static std::string GTargetFileName = "";
@@ -8,6 +8,18 @@ static std::string GTargetFileName = "";
 static bool ProcessArguments( int argc, char **argv ) noexcept
 {
 	ArgmutentsParser Parser( argc, argv );
+
+	if( Parser.Exists( "--help" ) )
+	{
+		puts( GHeadHelpString );
+		exit( SUCCESS );
+	}
+
+	if( Parser.Exists( "--version" ) )
+	{
+		puts( "head (Balan Narcis) 1.0\n" );
+		exit( SUCCESS );
+	}
 
 	auto Option = Parser.FindWithValue( "-c" );
 	if( !Option.first.empty( ) )

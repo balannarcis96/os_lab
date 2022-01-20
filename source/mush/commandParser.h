@@ -97,12 +97,13 @@ public:
 
 	int ExecvpShell( ) noexcept;
 
+	std::vector< std::string > CommandParts;
+
 private:
 	void FromStringList( const std::vector< std::string > &StringList ) noexcept;
 
-	std::vector< std::string > CommandParts;
-	char **					   Argv = nullptr;
-	int						   Argc = 0;
+	char **Argv = nullptr;
+	int	   Argc = 0;
 
 	friend class CommandOrConnector;
 };
@@ -112,8 +113,12 @@ class CommandOrConnector
 public:
 	std::string Value = "";
 	Command		ParsedCommand;
-	bool		bIsCommand = false;
-	bool		IsFile	   = false;
+	std::string ChrootTarget;
+	bool		bIsCommand	= false;
+	bool		bIsChroot	= false;
+	bool		IsFile		= false;
+	bool		ShowHelp	= false;
+	bool		ShowVersion = false;
 
 	bool operator==( const CommandOrConnector &Other ) const noexcept
 	{
@@ -130,12 +135,17 @@ public:
 		return !IsEmpty( ) && !bIsCommand;
 	}
 
+	bool IsChroot( ) const noexcept
+	{
+		return !IsEmpty( ) && bIsChroot;
+	}
+
 	bool IsCommand( ) const noexcept
 	{
 		return !IsEmpty( ) && bIsCommand;
 	}
 
-	void PrepareCustomCommand() noexcept;
+	void PrepareCustomCommand( ) noexcept;
 
 	static const CommandOrConnector Empty;
 };

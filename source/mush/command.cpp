@@ -11,36 +11,6 @@ char		   GTransferBuffer[ CBufferSize ] = { 0 };
 
 extern char **environ;
 
-void DoCommandOnChild( CommandOrConnector &InCommand, const CommandOrConnector &Prev, const CommandOrConnector &Next ) noexcept
-{
-	if( !InCommand.bIsCommand )
-	{
-		printf( "Ivalid Command!\n" );
-		exit( FAIL );
-	}
-
-	auto &	   Command	   = InCommand.ParsedCommand;
-	const auto CommandName = Command.GetCommandName( );
-
-	// if( CommandName == "head2" )
-	// {
-	// 	printf( "Head: %s\n", Command.ToString( ).c_str( ) );
-	// }
-	// else if( CommandName == "chroot2" )
-	// {
-	// 	printf( "Chroot: %s\n", Command.ToString( ).c_str( ) );
-	// }
-	// else if( CommandName == "nl2" )
-	// {
-	// 	printf( "Nl: %s\n", Command.ToString( ).c_str( ) );
-	// }
-	// else
-	// {
-	//	}
-
-	Command.Execvp( );
-}
-
 int DoCommand( CommandOrConnector &Command, const CommandOrConnector &Prev, const CommandOrConnector &Next ) noexcept
 {
 	int Pipe_StdIn[ 2 ];
@@ -67,6 +37,24 @@ int DoCommand( CommandOrConnector &Command, const CommandOrConnector &Prev, cons
 	const auto ForkResult_PID = fork( );
 	if( ForkResult_PID == 0 )
 	{
+		if( Prev.IsChroot( ) )
+		{
+			const std::string &TargetRoot = Prev.ChrootTarget;
+			if( !DirectoryExists( TargetRoot.c_str( ) ) )
+			{
+				printf( "chroot: cannot change root directory to '%s': No such directory\n", TargetRoot.c_str( ) );
+				exit( FAIL );
+			}
+
+			if( chdir( TargetRoot.c_str( ) ) != 0 )
+			{
+				printf( "chroot: cannot change root directory to '%s'!\n", TargetRoot.c_str( ) );
+				exit( FAIL );
+			}
+
+			printf( "chroot: set cwd: %s\n", TargetRoot.c_str( ) );
+		}
+
 		if( Prev.IsConnector( ) && Prev.Value == ">" )
 		{
 			if( !Command.IsFile )
@@ -136,11 +124,6 @@ int DoCommand( CommandOrConnector &Command, const CommandOrConnector &Prev, cons
 			Command.PrepareCustomCommand( );
 			ExecuteResult = main_head( Command.ParsedCommand.GetArgc( ), Command.ParsedCommand.GetArgv( ) );
 		}
-		else if( Command.ParsedCommand.GetCommandName( ) == "chroot" )
-		{
-			Command.PrepareCustomCommand( );
-			ExecuteResult = main_chroot( Command.ParsedCommand.GetArgc( ), Command.ParsedCommand.GetArgv( ) );
-		}
 		else
 		{
 			ExecuteResult = Command.ParsedCommand.Execvp( );
@@ -198,10 +181,28 @@ void ProcessCommandChain( std::vector< CommandOrConnector > &Command ) noexcept
 				Part.IsFile = true;
 			}
 
+			if( Part.ParsedCommand.GetCommandName( ) == "chroot" )
+			{
+				if( Part.ShowHelp )
+				{
+					puts( "Balan Narcis[chroot]\n"
+						  "Usage: chroot NEWROOT [COMMAND [ARG]...]\n"
+						  "Run COMMAND with root directory set to NEWROOT.\n" );
+				}
+
+				if( Part.ShowVersion )
+				{
+					puts( "chroot (Balan Narcis) 1.0\n" );
+				}
+
+				//printf( "mush: chroot skipped [target=%s]\n", Part.ChrootTarget.c_str( ) );
+				continue;
+			}
+
 			const auto Result = DoCommand( Part, Prev, Next );
 			if( Result != SUCCESS )
 			{
-				std::cout << Part.ParsedCommand.ToString( ) << ": Existed with status " << Result << std::endl;
+				std::cout << Part.ParsedCommand.GetCommandName( ) << ": Existed with status " << Result << std::endl;
 				break;
 			}
 		}

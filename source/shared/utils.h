@@ -77,13 +77,16 @@ public:
 			return Empty;
 		}
 
-		auto Result = std::find_if( Parts.begin( ), Parts.end( ), []( const std::string &Item ) noexcept { return !Item.empty( ) && Item[ 0 ] != '-'; } );
-		if( Result == Parts.end( ) )
+		for( size_t i = Parts.size( ) - 1; i >= 0; --i )
 		{
-			return Empty;
+			const auto &Item = Parts[ i ];
+			if( !Item.empty( ) && Item[ 0 ] != '-' )
+			{
+				return Item;
+			}
 		}
 
-		return *Result;
+		return Empty;
 	}
 
 	const std::vector< std::string > &GetParts( ) const noexcept
@@ -104,4 +107,3 @@ std::string Trim( std::string Source ) noexcept;
 std::vector< std::string > Split( const std::string &Source, char Delimtier ) noexcept;
 
 std::vector< std::string > SplitAndTrim( const std::string &Source, char Delimtier ) noexcept;
-

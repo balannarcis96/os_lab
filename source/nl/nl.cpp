@@ -8,6 +8,18 @@ static bool ProcessArguments( int argc, char **argv ) noexcept
 {
 	ArgmutentsParser Parser( argc, argv );
 
+	if( Parser.Exists( "-h" ) || Parser.Exists( "--help" ) )
+	{
+		puts( GNL_HelpString );
+		exit( SUCCESS );
+	}
+
+	if( Parser.Exists( "--version" ) )
+	{
+		puts( "nl (Balan narcis) 1.0!\n" );
+		exit( SUCCESS );
+	}
+
 	auto Option = Parser.FindWithValue( "-d" );
 	if( !Option.first.empty( ) )
 	{
@@ -41,6 +53,8 @@ static std::pair< std::vector< std::string >, int > GetInput( ) noexcept
 {
 	if( GTargetFileName.empty( ) )
 	{
+		printf( "nl: using stdin!\n" );
+
 		int LineNumber = 1;
 		for( std::string Line; std::getline( std::cin, Line ); )
 		{
@@ -49,6 +63,8 @@ static std::pair< std::vector< std::string >, int > GetInput( ) noexcept
 
 		return { { }, SUCCESS };
 	}
+
+	//printf( "GetInput() -> %s\n", GTargetFileName.c_str( ) );
 
 	std::vector< std::string > Output;
 
@@ -73,15 +89,6 @@ static std::pair< std::vector< std::string >, int > GetInput( ) noexcept
 
 int main_nl( int argc, char **argv ) noexcept
 {
-	printf( "cuomst nl\n" );
-
-	char **temp = argv;
-	while( *temp )
-	{
-		printf( "nl: %s\n", *temp );
-		temp++;
-	}
-
 	const auto ProcessArgumentsResult = ProcessArguments( argc, argv );
 	if( !ProcessArgumentsResult )
 	{
