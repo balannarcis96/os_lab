@@ -118,3 +118,30 @@ std::vector< std::string > SplitAndTrim( const std::string &Source, char Delimti
 
 	return Result;
 }
+
+std::string PerformChroot( std::string ChrootTarget ) noexcept
+{
+	char Old[ PATH_MAX ];
+	getcwd( Old, PATH_MAX );
+
+	const std::string &TargetRoot = ChrootTarget;
+	if( !DirectoryExists( TargetRoot.c_str( ) ) )
+	{
+		printf( "chroot: cannot change root directory to '%s': No such directory\n", TargetRoot.c_str( ) );
+		return "";
+	}
+
+	if( chdir( TargetRoot.c_str( ) ) != 0 )
+	{
+		chdir( Old );
+		printf( "chroot: cannot change root directory to '%s'!\n", TargetRoot.c_str( ) );
+		return "";
+	}
+
+	char New[ PATH_MAX ];
+	getcwd( New, PATH_MAX );
+
+	chdir( Old );
+
+	return New;
+}

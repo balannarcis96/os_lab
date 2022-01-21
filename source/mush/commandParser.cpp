@@ -2,6 +2,8 @@
 
 const CommandOrConnector CommandOrConnector::Empty;
 
+extern bool GVerbose;
+
 void Command::FromStringList( const std::vector< std::string > &StringList ) noexcept
 {
 	Clear( );
@@ -94,16 +96,19 @@ int Command::Execvp( ) noexcept
 {
 	FromStringList( CommandParts );
 
-	printf( "####### Args ########\n" );
-
-	char **Temp = GetArgv( );
-	while( *Temp )
+	if( GVerbose )
 	{
-		printf( "%s\n", *Temp );
-		Temp++;
-	}
+		printf( "####### execvp ########\n" );
 
-	printf( "####################\n\n" );
+		char **Temp = GetArgv( );
+		while( *Temp )
+		{
+			printf( "%s\n", *Temp );
+			Temp++;
+		}
+
+		printf( "####################\n\n" );
+	}
 
 	return execvp( Argv[ 0 ], Argv );
 }
@@ -284,15 +289,4 @@ bool CommandLineParser::ParseCommand( const std::string &Command ) noexcept
 void CommandOrConnector::PrepareCustomCommand( ) noexcept
 {
 	ParsedCommand.FromStringList( ParsedCommand.CommandParts );
-
-	// printf( "####### Args ########\n" );
-
-	// char **Temp = ParsedCommand.GetArgv( );
-	// while( *Temp )
-	// {
-	// 	printf( "%s\n", *Temp );
-	// 	Temp++;
-	// }
-
-	// printf( "####################\n\n" );
 }

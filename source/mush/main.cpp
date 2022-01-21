@@ -1,6 +1,9 @@
 #include "mush.h"
 
-std::string GCWD;
+std::string GCWD		   = "";
+bool		GVerbose	   = false;
+bool		GUseCustomNL   = true;
+bool		GUseCustomHead = true;
 
 bool UpdateCWD( ) noexcept
 {
@@ -33,6 +36,11 @@ int main( int argc, char **argv )
 	system( "clear" );
 
 	printf( "############# MUSH-CLI ###############\n\n" );
+
+	if( GVerbose )
+	{
+		puts( "[Verbose Enabled]\n" );
+	}
 
 	while( true )
 	{
