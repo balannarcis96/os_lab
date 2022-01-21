@@ -5,69 +5,98 @@ static int		   GNumberOfLines  = 10;
 static bool		   GQuite		   = true;
 static std::string GTargetFileName = "";
 
+static int GHelpFlag	= 0;
+static int GVersionFlag = 0;
+static int GVerbose = 0;
+
+static struct option GLongOptions[] = {
+	{ "help", no_argument, &GHelpFlag, 1 },
+	{ "verbose", no_argument, &GVerbose, 'v' },
+	{ "version", no_argument, &GVersionFlag, 0 },
+	{ "bytes", required_argument, 0, 'c' },
+	{ "lines", required_argument, 0, 'n' },
+	{ "quiet", no_argument, 0, 'q' },
+	{ 0, 0, 0, 0 }
+};
+
 static bool ProcessArguments( int argc, char **argv ) noexcept
 {
-	ArgmutentsParser Parser( argc, argv );
-
-	if( Parser.Exists( "--help" ) )
+	int Opt		 = 0;
+	int OptIndex = 0;
+	while( 1 )
 	{
-		puts( GHeadHelpString );
-		exit( SUCCESS );
-	}
-
-	if( Parser.Exists( "--version" ) )
-	{
-		puts( "head (Balan Narcis) 1.0\n" );
-		exit( SUCCESS );
-	}
-
-	auto Option = Parser.FindWithValue( "-c" );
-	if( !Option.first.empty( ) )
-	{
-		if( Option.second.empty( ) )
+		Opt = getopt_long( argc, argv, "c:hn:qv", GLongOptions, &OptIndex );
+		if( Opt == -1 )
 		{
-			puts( "head: Invalid -c usage, see usage string (-h)!\n" );
-			return false;
+			break;
 		}
 
-		if( !IsIntegerString( Option.second.c_str( ) ) )
+		switch( Opt )
 		{
-			printf( "head: Invalid -c usage! Invalid number of bytes [%s]! See usage string (-h)!\n", Option.second.c_str( ) );
-			return false;
+			case 0:
+			{
+				if( GLongOptions[ OptIndex ].flag != 0 ) //help
+				{
+					if( !strcmp( GLongOptions[ OptIndex ].name, "help" ) )
+					{
+						puts( GHeadHelpString );
+						exit( SUCCESS );
+					}
+					else if( !strcmp( GLongOptions[ OptIndex ].name, "version" ) )
+					{
+						puts( "head (Balan narcis) 1.0!\n" );
+						exit( SUCCESS );
+					}
+					else if( !strcmp( GLongOptions[ OptIndex ].name, "bytes" ) )
+					{
+						GNumberOfBytes = atoi( optarg );
+					}
+					else if( !strcmp( GLongOptions[ OptIndex ].name, "lines" ) )
+					{
+						GNumberOfLines = atoi( optarg );
+					}
+					else if( !strcmp( GLongOptions[ OptIndex ].name, "quiet" ) )
+					{
+						GQuite = true;
+					}
+					else if( !strcmp( GLongOptions[ OptIndex ].name, "verbose" ) )
+					{
+						GQuite = false;
+					}
+				}
+			}
+			break;
+			case 'c':
+			{
+				GNumberOfBytes = atoi( optarg );
+			}
+			break;
+			case 'n':
+			{
+				GNumberOfLines = atoi( optarg );
+			}
+			break;
+			case 'v':
+			{
+				GQuite = false;
+				GVerbose = true;
+			}
+			break;
+			case '?':
+			{
+				printf( "head: unknown parameter [%c], see help (--help)!\n\n", static_cast< char >( Opt ) );
+				return false;
+			}
+			default:
+				printf( "head: unknown parameter [%c], see help (--help)!\n\n", static_cast< char >( Opt ) );
+				return false;
 		}
-
-		GNumberOfBytes = atoi( Option.second.c_str( ) );
 	}
 
-	Option = Parser.FindWithValue( "-n" );
-	if( !Option.first.empty( ) )
+	if( optind < argc )
 	{
-		if( Option.second.empty( ) )
-		{
-			puts( "head: Invalid -n usage, see usage string (-h)!\n" );
-			return false;
-		}
-
-		if( !IsIntegerString( Option.second.c_str( ) ) )
-		{
-			printf( "head: Invalid -n usage! Invalid number of lines [%s]! See usage string (-h)!\n", Option.second.c_str( ) );
-			return false;
-		}
-
-		GNumberOfLines = atoi( Option.second.c_str( ) );
+		GTargetFileName = argv[ optind ];
 	}
-
-	if( Parser.Exists( "-q" ) )
-	{
-		GQuite = true;
-	}
-
-	if( Parser.Exists( "-v" ) )
-	{
-		GQuite = false;
-	}
-
-	GTargetFileName = Parser.GetFileName( );
 
 	return true;
 }

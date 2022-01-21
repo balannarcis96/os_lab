@@ -36,62 +36,6 @@ void Command::FromStringList( const std::vector< std::string > &StringList ) noe
 	Argc = static_cast< int >( StringList.size( ) );
 };
 
-int Command::Execve( ) noexcept
-{
-	char CWD[ PATH_MAX ];
-	getcwd( CWD, PATH_MAX );
-
-	std::vector< std::string > FinalParts;
-	FinalParts.push_back( CWD );
-
-	bool bFirst = true;
-	for( const auto &Part : CommandParts )
-	{
-		if( bFirst )
-		{
-			bFirst = false;
-			continue;
-		}
-
-		FinalParts.push_back( Part );
-	}
-
-	FromStringList( FinalParts );
-
-	for( const auto &Part : FinalParts )
-	{
-		std::cout << "FPart:" << Part << "\n";
-	}
-
-	std::string FinalCommand = "/usr/bin/";
-	FinalCommand += GetCommandName( );
-
-	std::cout << "FCommand: " << FinalCommand << "\n";
-
-	return execve( FinalCommand.c_str( ), Argv, environ );
-}
-
-int Command::ExecvpShell( ) noexcept
-{
-	std::string FinalCommand;
-	for( const auto &Part : CommandParts )
-	{
-		FinalCommand += Part + " ";
-	}
-
-	char FinalCommandBuffer[ 4096 ];
-	strcpy( FinalCommandBuffer, FinalCommand.c_str( ) );
-
-	char *const argv[] = {
-		"sh",
-		"-c",
-		FinalCommandBuffer,
-		nullptr
-	};
-
-	return execvp( argv[ 0 ], argv );
-}
-
 int Command::Execvp( ) noexcept
 {
 	FromStringList( CommandParts );

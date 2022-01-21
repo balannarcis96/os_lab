@@ -1,7 +1,5 @@
 #include "shared.h"
 
-const std::string ArgmutentsParser::Empty = "";
-
 bool HasTerminalStandardIn( ) noexcept
 {
 	return isatty( STDIN_FILENO );
@@ -55,6 +53,7 @@ bool DirectoryExists( const char *pzPath ) noexcept
 
 	return bExists;
 }
+
 std::string Trim( std::string Source ) noexcept
 {
 	//Left trim

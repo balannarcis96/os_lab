@@ -22,6 +22,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/param.h>
+#include <getopt.h>
 
 #include "utils.h"
 #include "command.h"

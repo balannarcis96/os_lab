@@ -4,47 +4,86 @@ static std::string GSectionDelimiter = "";
 static std::string GNumberSeparator	 = "  ";
 static std::string GTargetFileName	 = "";
 
+static int GHelpFlag	= 0;
+static int GVersionFlag = 0;
+
+static struct option GLongOptions[] = {
+	{ "help", no_argument, &GHelpFlag, 1 },
+	{ "version", no_argument, &GVersionFlag, 0 },
+	{ "section-delimiter", no_argument, 0, 'd' },
+	{ "number-separator", no_argument, 0, 's' },
+	{ 0, 0, 0, 0 }
+};
+
 static bool ProcessArguments( int argc, char **argv ) noexcept
 {
-	ArgmutentsParser Parser( argc, argv );
-
-	if( Parser.Exists( "-h" ) || Parser.Exists( "--help" ) )
+	int Opt		 = 0;
+	int OptIndex = 0;
+	while( 1 )
 	{
-		puts( GNL_HelpString );
-		exit( SUCCESS );
-	}
-
-	if( Parser.Exists( "--version" ) )
-	{
-		puts( "nl (Balan narcis) 1.0!\n" );
-		exit( SUCCESS );
-	}
-
-	auto Option = Parser.FindWithValue( "-d" );
-	if( !Option.first.empty( ) )
-	{
-		if( Option.second.empty( ) )
+		Opt = getopt_long( argc, argv, "d:fhs:v:", GLongOptions, &OptIndex );
+		if( Opt == -1 )
 		{
-			puts( "nl: Invalid -d usage, see usage string (-h)!\n" );
-			return false;
+			break;
 		}
 
-		GSectionDelimiter = Option.second;
-	}
-
-	Option = Parser.FindWithValue( "-s" );
-	if( !Option.first.empty( ) )
-	{
-		if( Option.second.empty( ) )
+		switch( Opt )
 		{
-			puts( "nl: Invalid -s usage, see usage string (-h)!\n" );
-			return false;
+			case 0:
+			{
+				if( GLongOptions[ OptIndex ].flag != 0 ) //help
+				{
+					if( !strcmp( GLongOptions[ OptIndex ].name, "help" ) )
+					{
+						puts( GNL_HelpString );
+						exit( SUCCESS );
+					}
+					else if( !strcmp( GLongOptions[ OptIndex ].name, "version" ) )
+					{
+						puts( "nl (Balan narcis) 1.0!\n" );
+						exit( SUCCESS );
+					}
+					else if( !strcmp( GLongOptions[ OptIndex ].name, "section-delimiter" ) )
+					{
+						GSectionDelimiter = optarg;
+					}
+					else if( !strcmp( GLongOptions[ OptIndex ].name, "number-separator" ) )
+					{
+						GNumberSeparator = optarg;
+					}
+				}
+			}
+			break;
+			case 'd':
+			{
+				GSectionDelimiter = optarg;
+			}
+			break;
+			case 's':
+			{
+				GNumberSeparator = optarg;
+			}
+			break;
+			case 'f':
+			{
+				GTargetFileName = optarg;
+			}
+			break;
+			case '?':
+			{
+				printf( "nl: unknown parameter [%c], see help (--help)!\n\n", static_cast< char >( Opt ) );
+			}
+			break;
+			default:
+				printf( "nl: unknown parameter [%c], see help (--help)!\n\n", static_cast< char >( Opt ) );
+				break;
 		}
-
-		GNumberSeparator = Option.second;
 	}
 
-	GTargetFileName = Parser.GetFileName( );
+	if( optind < argc )
+	{
+		GTargetFileName = argv[ optind ];
+	}
 
 	return true;
 }
@@ -53,8 +92,6 @@ static std::pair< std::vector< std::string >, int > GetInput( ) noexcept
 {
 	if( GTargetFileName.empty( ) )
 	{
-		printf( "nl: using stdin!\n" );
-
 		int LineNumber = 1;
 		for( std::string Line; std::getline( std::cin, Line ); )
 		{
@@ -64,17 +101,17 @@ static std::pair< std::vector< std::string >, int > GetInput( ) noexcept
 		return { { }, SUCCESS };
 	}
 
-	//printf( "GetInput() -> %s\n", GTargetFileName.c_str( ) );
-
 	std::vector< std::string > Output;
 
 	auto File = std::ifstream( GTargetFileName );
 	if( !File.is_open( ) )
 	{
+		printf( "nl: ERROR_FILE_NOT_FOUND[%s]\n", GTargetFileName.c_str( ) );
 		return { { }, ERROR_FILE_NOT_FOUND };
 	}
 
-	for( std::string Line; std::getline( File, Line ); )
+	std::string Line;
+	while( std::getline( File, Line ) )
 	{
 		Output.push_back( Line );
 	}
@@ -98,7 +135,7 @@ int main_nl( int argc, char **argv ) noexcept
 	const auto Lines = GetInput( );
 	if( Lines.second != SUCCESS )
 	{
-		return Lines.second;
+		exit( Lines.second );
 	}
 
 	int LineNumber = 1;

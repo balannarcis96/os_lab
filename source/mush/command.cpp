@@ -391,7 +391,7 @@ void ProcessCommandChain( std::vector< CommandOrConnector > &Command ) noexcept
 			const auto Result = DoCommand( Part, Prev, Next );
 			if( Result != SUCCESS )
 			{
-				std::cout << Part.ParsedCommand.GetCommandName( ) << ": existed with status " << Result << std::endl;
+				//std::cout << Part.ParsedCommand.GetCommandName( ) << ": existed with status " << Result << std::endl;
 				break;
 			}
 		}
