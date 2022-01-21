@@ -14,4 +14,3 @@ add_custom_command(TARGET os_lab_mush
 target_link_libraries(os_lab_mush PUBLIC os_lab_shared)
 target_link_libraries(os_lab_mush PUBLIC os_lab_nl)
 target_link_libraries(os_lab_mush PUBLIC os_lab_head)
-target_link_libraries(os_lab_mush PUBLIC os_lab_chroot)
